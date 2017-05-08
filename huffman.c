@@ -53,26 +53,19 @@ TNo * adicionaOrdenado( TNo *inicio, char ch, int freq , int * ap)
 	return inicio;
 }
 
-TNo * extraiMinimo(TNo * inicio) {
-	
-	if(inicio->dir){
-		inicio = inicio->dir;
-	}
-	return inicio;
-}
 
-void geraRaiz(TNo * lista , int stop){
-	int i;
-	
-	for( i = 0; i < stop; i++) {
-		TNo *novo = (TNo *) calloc(1,sizeof(TNo));
-		novo->dir = extraiMinimo(lista);
-		novo->esq = extraiMinimo(novo->dir);
-		novo->freq = novo->dir->freq + novo->esq->freq;
-		
-		printf("Novo direita = %d , Novo esquerda = %d , Novo frequencia = %d \n" , novo->dir->freq , novo->esq->freq , novo->freq);
-	}
-} 
+//TNo * geraRaiz(TNo * lista , int stop){
+//	int i;
+//	
+//	for( i = 0; i < stop; i++) {
+//		TNo *novo = (TNo *) calloc(1,sizeof(TNo));
+//		novo->esq = extraiMinimo(lista);
+//		novo->dir = extraiMinimo(lista);
+//		novo->freq = novo->esq->freq + novo->dir->freq;
+//		
+//		printf("Novo no com raiz %d , direita %d , esquerda %d \n " , novo->freq , novo->dir->freq , novo->esq->freq);
+//	}
+//} 
 
 
 void mostraLista(TNo * inicio ){
@@ -82,6 +75,14 @@ void mostraLista(TNo * inicio ){
 	}
 }
 
+TNo * extraiMinimo(TNo * inicio) {
+	
+	if(inicio->dir){
+		inicio = inicio->dir;
+	}
+	printf("Minimo  = %d \n" , inicio->freq);
+	return inicio;
+}
 
 
 int main(){
@@ -110,9 +111,11 @@ int main(){
 			ini = adicionaOrdenado(ini , (char)i , fc[i] , &diffLetters);
 		}
 	}
-
-	geraRaiz(ini, diffLetters);
-
+	TNo *x = extraiMinimo(ini);
+	TNo *y = extraiMinimo(x);
+	TNo *o = extraiMinimo(y);
+	TNo *p = extraiMinimo(o);
+//	geraRaiz(ini , *diffLetters);
 //	mostraLista(ini);
 	
 }
