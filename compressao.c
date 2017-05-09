@@ -5,9 +5,13 @@
 typedef struct _TNo {
 	char ch;
 	int freq;
+	struct _TNo *prox;
 	struct _TNo *dir;
 	struct _TNo *esq;
 }TNo;
+
+TNo *ini;
+TNo *teste;
 
 TNo * adicionaInicio( TNo *inicio, char ch, int freq)
 {
@@ -16,14 +20,14 @@ TNo * adicionaInicio( TNo *inicio, char ch, int freq)
 	novo->ch = ch;
 	novo->freq = freq;
 
-	novo->dir = inicio;
+	novo->prox = inicio;
 	inicio = novo;
 
 	return inicio;
 }
 
 
-TNo * adicionaOrdenado( TNo *inicio, char ch, int freq , int * ap)
+TNo * adicionaOrdenado(char ch, int freq , int * ap)
 {
 	// Alocando um novo No
 	TNo *novo = (TNo *) calloc(1,sizeof(TNo));
@@ -32,57 +36,87 @@ TNo * adicionaOrdenado( TNo *inicio, char ch, int freq , int * ap)
 	
 	TNo *aux,*anterior;
 	
-	aux = inicio;
+	aux = ini;
 	anterior = NULL;
 	
 	while(aux && freq > aux->freq){
 		anterior = aux;
-		aux = aux->dir;
+		aux = aux->prox;
 	}
-	novo->dir = aux;
+	novo->prox = aux;
 	if(anterior){
-		anterior->dir = novo;
+		anterior->prox = novo;
 	}
 		
 	else {
-		inicio = novo;
+		ini = novo;
 	}
 	
 	*ap = *ap + 1;
 			
-	return inicio;
+	return ini;
 }
 
-TNo * extraiMinimo(TNo * inicio) {
+
+void insereCrescente(TNo * novo , int freq)
+{	
+	TNo *aux,*anterior;
 	
-	if(inicio->dir){
-		inicio = inicio->dir;
+	aux = ini;
+	anterior = NULL;
+	
+	while(aux && freq > aux->freq){
+		anterior = aux;
+		aux = aux->prox;
 	}
-	return inicio;
+	novo->prox = aux;
+	if(anterior){
+		anterior->prox = novo;
+	}
+		
+	else {
+		ini = novo;
+	}
 }
 
-void geraRaiz(TNo * lista , int stop){
+TNo * extraiMinimo() {
+	TNo * aux = ini;
+	
+	if(ini->prox){
+		ini = ini->prox;
+	}
+	return aux;
+}
+
+TNo * geraRaiz(int stop){
 	int i;
 	
-	for( i = 0; i < stop; i++) {
+	for( i = 0; i < stop-1; i++) {
 		TNo *novo = (TNo *) calloc(1,sizeof(TNo));
-		novo->dir = extraiMinimo(lista);
-		novo->esq = extraiMinimo(novo->dir);
-		novo->freq = novo->dir->freq + novo->esq->freq;
-		
-		printf("Novo direita = %d , Novo esquerda = %d , Novo frequencia = %d \n" , novo->dir->freq , novo->esq->freq , novo->freq);
+		novo->ch = 'x';
+		novo->esq = extraiMinimo(ini);
+		novo->dir = extraiMinimo(ini);
+		novo->freq = novo->esq->freq + novo->dir->freq;
+		insereCrescente(novo,novo->freq);
+//		printf("Novo freq = %d char=%c, esquerda fre = %d char = %c, direita freq = %d char = %c\n" , novo->freq, novo->ch , novo->esq->freq , novo->esq->ch,  novo->dir->freq , novo->dir->ch);
 	}
 } 
 
 
+void percorrePosOrdem(TNo * ini , int i){
+	if(ini){
+		percorrePosOrdem(ini->esq , i+1);
+		percorrePosOrdem(ini->dir , i + 1);
+		
+	}	
+}
+
 void mostraLista(TNo * inicio ){
 	while( inicio ){
 		printf("%c=%d ", inicio->ch, inicio->freq);
-		inicio = inicio->dir;
+		inicio = inicio->prox;
 	}
 }
-
-
 
 int main(){
 	
@@ -91,7 +125,7 @@ int main(){
 	int i;
 	int *diffLetters = 0;
 	int fc[256];
-	TNo *ini;
+	
 	ini = 0;
 	
 	file = fopen("base.txt" , "r");
@@ -107,12 +141,12 @@ int main(){
 	// Cria a linked list
 	for(i = 0; i<256; i++) {
 		if(fc[i] != 0) {
-			ini = adicionaOrdenado(ini , (char)i , fc[i] , &diffLetters);
+			ini = adicionaOrdenado((char)i , fc[i] , &diffLetters);
 		}
 	}
 
-	geraRaiz(ini, diffLetters);
-
-//	mostraLista(ini);
+	geraRaiz(diffLetters);
+	percorrePosOrdem(ini);
+	
 	
 }
