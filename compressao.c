@@ -58,14 +58,14 @@ TNo * adicionaOrdenado(char ch, int freq , int * ap)
 }
 
 
-void insereCrescente(TNo * novo , int freq)
+void insereCrescente(TNo * novo)
 {	
 	TNo *aux,*anterior;
 	
 	aux = ini;
 	anterior = NULL;
 	
-	while(aux && freq > aux->freq){
+	while(aux && novo->freq > aux->freq){
 		anterior = aux;
 		aux = aux->prox;
 	}
@@ -91,20 +91,22 @@ TNo * extraiMinimo() {
 TNo * geraRaiz(int stop){
 	int i;
 	
-	for( i = 0; i < stop-1; i++) {
+	for( i = 0; i < stop; i++) {
 		TNo *novo = (TNo *) calloc(1,sizeof(TNo));
 		novo->ch = 'x';
 		novo->esq = extraiMinimo(ini);
 		novo->dir = extraiMinimo(ini);
 		novo->freq = novo->esq->freq + novo->dir->freq;
-		insereCrescente(novo,novo->freq);
+		insereCrescente(novo);
 //		printf("Novo freq = %d char=%c, esquerda fre = %d char = %c, direita freq = %d char = %c\n" , novo->freq, novo->ch , novo->esq->freq , novo->esq->ch,  novo->dir->freq , novo->dir->ch);
 	}
 } 
 
 
 void percorrePosOrdem(TNo * ini , int i){
+	
 	if(ini){
+		printf("%d " , ini->freq);
 		percorrePosOrdem(ini->esq , i+1);
 		percorrePosOrdem(ini->dir , i + 1);
 		
@@ -144,9 +146,10 @@ int main(){
 			ini = adicionaOrdenado((char)i , fc[i] , &diffLetters);
 		}
 	}
-
-	geraRaiz(diffLetters);
-	percorrePosOrdem(ini);
 	
+	
+	
+	geraRaiz(diffLetters);
+	percorrePosOrdem(ini , -1);
 	
 }
